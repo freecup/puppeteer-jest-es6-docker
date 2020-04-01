@@ -1,4 +1,3 @@
-'use strict'
 import {
   API_LAUNCH,
   API_TEST,
@@ -17,7 +16,7 @@ import {
 } from '@const/properties/init.values'
 import { defaultViewport } from '@config/puppet.settings'
 import { browser, checkBrowserConnectionBeforeAll } from '@config/jest.settings'
-import devices, { desktopUserAgent } from '@config/devices/device.settings'
+import devices from '@config/devices/device.settings'
 import pageObjects from '@pages'
 import path from 'path'
 import {
@@ -41,9 +40,13 @@ import {
   defaultTimeout,
   defaultWaitTimer,
 } from '@const/global/timers'
-import { startErrorExceptionMessage } from '@const/global/error.messages'
+import {
+  errorInPreviousTest,
+  startErrorExceptionMessage,
+  errorResult,
+} from '@const/global/errors'
 import { CHECK } from '@const/global/flags'
-import { NEW_LINE, TS_TRACE_FILTER } from '@const/global/constants'
+
 const stackTrace = require('stack-trace')
 
 let puppeteerPage: PuppeteerPage
@@ -59,7 +62,7 @@ export const updatePuppeteerPageObjects = (page: PuppeteerPage) => {
 export const setDevice = async (name: string) => {
   const deviceObject = devices.find(e => e.name === name)
   if (deviceObject !== undefined) {
-    isMobileDevice = deviceObject.userAgent !== desktopUserAgent
+    isMobileDevice = deviceObject.viewport.isMobile
     await puppeteerPage.emulate(deviceObject)
   }
 }
@@ -191,7 +194,7 @@ export const multiPack = (name: string, fn: () => void,
             })
             break
           case PERF_TEST:
-            throw new Error('multiPack can\'t be user for Performance. Use performancePack or singlePack instead.')
+            throw new Error('multiPack can\'t be used for Performance. Use performancePack or singlePack instead.')
           case API_TEST:
           default:
             break
@@ -361,6 +364,7 @@ export type FunctionWithTestName = {
   testName?: string;
 }
 
+let isPassed: boolean = false
 /*
  * Should be used to execute non-UI specific tests.
  */
@@ -369,14 +373,11 @@ export const test = (name: string, fn: FunctionWithTestName,
   fn.testName = name
   const doneTest = async () => {
     try {
+      isPassed = false
       await fn()
+      isPassed = true
     } catch (e) {
-      const result = e.message + NEW_LINE + e.stack
-        .split(NEW_LINE)
-        .filter((e: any) => e.includes(TS_TRACE_FILTER))
-        .join(NEW_LINE)
-        .slice(0, 1000)
-      throw new Error(result)
+      throw new Error(errorResult(e))
     }
   }
 
@@ -428,4 +429,36 @@ export const exist = (name: string,
   }
 
   ui(name, fn, testTimeout)
+}
+
+/*
+ * Works same way as test, but fails if previous test fails
+ */
+export const testSequence = (name: string, fn: FunctionWithTestName,
+        timeout = defaultTimeout) => {
+  const throwError = () => {
+    throw new Error(errorInPreviousTest)
+  }
+
+  if (isPassed) {
+    test(name, fn, timeout)
+  } else {
+    test(name, throwError, timeout)
+  }
+}
+
+/*
+ * Works same way as ui test, but fails if previous test fails
+ */
+export const uiSequence = (name: string, fn: FunctionWithTestName,
+        timeout = defaultTimeout) => {
+  const throwError = () => {
+    throw new Error(errorInPreviousTest)
+  }
+
+  if (isPassed) {
+    ui(name, fn, timeout)
+  } else {
+    test(name, throwError, timeout)
+  }
 }

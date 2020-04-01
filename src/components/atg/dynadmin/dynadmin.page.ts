@@ -1,5 +1,4 @@
-'use strict'
-import AbstractContentObject from '@classes/util/abstract.content.object'
+import Helper from '@classes/util/helper'
 import { DYN_ADMIN } from '@const/properties/constants'
 
 const selectors = {
@@ -9,7 +8,7 @@ const selectors = {
   results: 'pre code',
 }
 
-export default class DynAdmin extends AbstractContentObject {
+export default class DynAdmin extends Helper {
   static getSelectors = () => selectors
 
   async open(path = DYN_ADMIN.PROD_SCHEME_URL) {
@@ -105,7 +104,7 @@ export default class DynAdmin extends AbstractContentObject {
   }
 
   async searchInRepository(text: string) {
-    await super.setValueToInput(selectors.inputField, text)
-    await super.click(selectors.submitButton)
+    await super.setValue(selectors.inputField, text)
+    await super.clickInBrowser(selectors.submitButton)
   }
 }

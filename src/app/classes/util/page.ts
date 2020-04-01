@@ -1,8 +1,7 @@
-'use strict'
 import { Browser, Page as PuppeteerPage } from 'puppeteer'
-import { desktopUserAgent } from '@config/devices/device.settings'
 import { currentDevice, setDevice, updatePuppeteerPageObjects } from '@actions'
 import { defaultViewport } from '@config/puppet.settings'
+
 
 export default class Page {
   // @ts-ignore
@@ -64,7 +63,6 @@ export default class Page {
   }
 
   async isMobile(): Promise<boolean> {
-    const userAgent = await this._page.evaluate(() => navigator.userAgent)
-    return !(userAgent === desktopUserAgent)
+    return this._page.viewport()?.isMobile || false
   }
 }

@@ -1,4 +1,3 @@
-'use strict'
 import quantity, { itemsToAdd } from '@components/shared/util/quantity'
 import { defaultWaitTimer } from '@const/global/timers'
 import { buildSpecificTempDir } from '@const/global/paths'
@@ -78,7 +77,7 @@ export default class ProductDetailsPage
     await super.waitFor(selectors.actions.enabled)
     const clicked = (await super.isMobile()) ?
       super.click(selectors.actions.addToCart) :
-      super.clickPuppeteer(selectors.actions.addToCart)
+      super.click(selectors.actions.addToCart)
     const isAddedResponse = super.waitAddItemToOrderResponse()
     const shoppingCartSummaryResponse = super.waitShoppingCartSummaryResponse()
     await super.checkResponseForErrors('Add to basket response error.', isAddedResponse)
@@ -118,7 +117,7 @@ export default class ProductDetailsPage
   }
 
   async viewImage(position = 0, timeout = defaultWaitTimer) {
-    const img = await super.getElementFromListPuppeteer(
+    const img = await super.getElementFromList(
       selectors.image.thumbnails.item, position, timeout)
     await img.click()
     return img

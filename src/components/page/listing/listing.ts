@@ -1,4 +1,3 @@
-'use strict'
 import { ElementHandle } from 'puppeteer'
 import quantity from '@components/shared/util/quantity'
 import { leadS } from '@components/shared/util/constant'
@@ -61,7 +60,7 @@ class Listing extends Rest implements AddToBasketInterface {
   static getListingSelectors = () => selectors
 
   async goToPDP(position = 0) {
-    await super.clickOnPuppeteer(selectors.products.pdpLink, position)
+    await super.clickOn(selectors.products.pdpLink, position)
   }
 
   async goToPDPAndBack(position = 0, url?: string, takeScreen = true) {
@@ -76,7 +75,7 @@ class Listing extends Rest implements AddToBasketInterface {
   }
 
   async addToBasket(position = 0) {
-    const button = await super.getElementFromListPuppeteer(
+    const button = await super.getElementFromList(
       selectors.products.addToBasket.container, position)
 
     // noinspection ES6MissingAwait
@@ -104,16 +103,16 @@ class Listing extends Rest implements AddToBasketInterface {
   }
 
   async openModal(position = 0) {
-    await super.clickOnPuppeteer(selectors.products.openModal, position)
+    await super.clickOn(selectors.products.openModal, position)
   }
 
   async clickOnFacet(position: number): Promise<ElementHandle> {
-    return super.clickAndGetOnPuppeteer(
+    return super.clickAndGetOn(
       selectors.navigation.facet.title, position)
   }
 
   async clickOnFacetOption(facet: ElementHandle, position = 0) {
-    const checkbox = await super.getElementFromParentElementPuppeteer(
+    const checkbox = await super.getElementFromParentElement(
       facet, selectors.navigation.facet.checkbox, position)
     await checkbox.click()
     await super.waitForSpinnerToDisappear()
@@ -129,7 +128,7 @@ class Listing extends Rest implements AddToBasketInterface {
   async clickFacetOptionWithoutExpand(
           facetPosition: number,
           checkboxPosition: number) {
-    const facet = await super.getElementFromListPuppeteer(
+    const facet = await super.getElementFromList(
       selectors.navigation.facet.element, facetPosition)
     await this.clickOnFacetOption(facet, checkboxPosition)
   }
@@ -149,7 +148,7 @@ class Listing extends Rest implements AddToBasketInterface {
   }
 
   async clearFacets() {
-    await super.clickPuppeteer(selectors.navigation.clearFacets)
+    await super.click(selectors.navigation.clearFacets)
   }
 
   async waitForListingPageElements() {

@@ -1,14 +1,14 @@
-'use strict'
-import AbstractContentObject from '@classes/util/abstract.content.object'
+import Helper from '@classes/util/helper'
 import { defaultResponseWaitTimer, defaultWaitTimer } from '@const/global/timers'
 import { Response } from 'puppeteer'
 
-export default class Rest extends AbstractContentObject {
+
+export default class Rest extends Helper {
   async clickWithResponse(selector: string, waitSpinner = true,
           ...rest: Array<string>) {
     const rests: Array<Promise<any>> = []
     rest.forEach(obj => rests.push(super.waitForResponseURLToContain(obj)))
-    await super.clickPuppeteer(selector)
+    await super.click(selector)
     await Promise.all(rests).catch(e => console.log('clickWithResponse', e))
     if (waitSpinner) {
       await super.waitForSpinnerToDisappear()
@@ -20,13 +20,12 @@ export default class Rest extends AbstractContentObject {
           rests: Array<string> = [],
           waitSpinner = true,
           optionSelector = 'option',
-          triggerChangeEvent = true,
           timeout = defaultWaitTimer) {
     const restArr: Array<Promise<any>> = []
     rests.forEach(
       obj => restArr.push(super.waitForResponseURLToContain(obj)))
-    await super.selectByOptionPosition(
-      selector, position, optionSelector, triggerChangeEvent, timeout)
+    await super.selectOption(
+      selector, position, optionSelector, timeout)
     await Promise.all(rests).catch(e => console.log('selectWithResponse', e))
     if (waitSpinner) {
       await super.waitForSpinnerToDisappear()
@@ -52,7 +51,7 @@ export default class Rest extends AbstractContentObject {
   async getOrderId(): Promise<string> {
     const cartSummary = await this.waitShoppingCartSummaryResponse()
     const responseJson: any = await cartSummary.json()
-    return responseJson.cartInfo.data.shoppingCart.id
+    return responseJson?.cartInfo?.data?.shoppingCart?.id
   }
 
   async isErrorResponse(response: Promise<Response>) {
@@ -98,7 +97,7 @@ export default class Rest extends AbstractContentObject {
     await super.scrollIntoView(selector, position)
     const response: any = waitForResponse.call(this, timeout)
 
-    const clicked = super.clickOnPuppeteer(selector, position)
+    const clicked = super.clickOn(selector, position)
     await this.checkResponseForErrors(errorMessage, response, timeout)
     await Promise.all([clicked, response])
       .catch(e => console.log('resolveClickWithResponse', e))
