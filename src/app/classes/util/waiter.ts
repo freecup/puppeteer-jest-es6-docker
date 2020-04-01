@@ -125,6 +125,22 @@ export default class Waiter extends Page {
     return this._page.waitFor(selector, { timeout: timeout })
   }
 
+  async waitToBeInvisible(selector: string,
+          timeout = defaultAnimationWaitTimer) {
+    return this.waitToBe(false,
+      selector,
+      this.isVisible,
+      timeout)
+  }
+
+  async waitToBeVisible(selector: string,
+          timeout = defaultWaitTimer) {
+    return this.waitToBe(true,
+      selector,
+      this.isVisible,
+      timeout)
+  }
+
   async waitToBe(expectedValue: boolean,
           selector: string,
           checkFunction: (selector: string) => boolean | Promise<boolean>,
