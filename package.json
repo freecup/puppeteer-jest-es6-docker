@@ -7,7 +7,7 @@
         "globals": {
             "reservedTestUsers": []
         },
-        "testRegex": "/tests/.*(api|ui|soap|spec|rest|perf)\\.ts$",
+        "testRegex": "/tests/SecondTask/.*(api|ui|soap|spec|rest|perf)\\.ts$",
         "testEnvironment": "<rootDir>/src/app/config/browser/test.environment.js",
         "globalSetup": "<rootDir>/src/app/config/browser/global.setup.ts",
         "globalTeardown": "<rootDir>/src/app/config/browser/global.teardown.ts",

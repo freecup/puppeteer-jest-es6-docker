@@ -1,7 +1,6 @@
 import { singlePack, test } from '@actions'
 import po from '@pages'
 import { browser } from '@config/jest.settings'
-import { CURRENT_DATE } from '@const/global/constants'
 
 singlePack('vyrskiy', () => {
   test('first task', async () => {
@@ -16,7 +15,5 @@ singlePack('vyrskiy', () => {
     const searchStatusLabelText = await LetuPage.getText('.ui-menu-item .search-form-preloader')
 
     expect(searchStatusLabelText).toEqual(searchStatusExpectedText)
-
-    await browser.close()
   })
 })
